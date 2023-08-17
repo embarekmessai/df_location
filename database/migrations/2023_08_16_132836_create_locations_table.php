@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id');
             $table->foreignId('customer_id');
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(0); // [0 => Disponible, 1 => Indisponible ]
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->timestamps();

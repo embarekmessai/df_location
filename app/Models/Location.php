@@ -19,7 +19,7 @@ class Location extends Model
     protected $fillable = [
         'product_id',
         'customer_id',
-        'status',
+        'status', // [0 => Disponible, 1 => Indisponible ]
         'start_date',
         'end_date',
     ];

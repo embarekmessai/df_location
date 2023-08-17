@@ -29,6 +29,10 @@ class Product extends Model
         'caution'
     ];
 
+    protected $casts = [
+        'images' => 'array'
+    ];
+
     /**
      * Get the location associated with the Product
      *
