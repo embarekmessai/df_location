@@ -17,13 +17,38 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+
+                Forms\Components\TextInput::make('name')
+                                        ->label(__('product_name'))
+                                        ->required()
+                                        ->maxLength(255),
+
+                Forms\Components\TextInput::make('price')
+                                        ->numeric()
+                                        ->inputMode('decimal')
+                                        ->step(0.01)
+                                        ->label(__('price'))
+                                        ->required(),
+
+                Forms\Components\TextInput::make('caution')
+                                        ->numeric()
+                                        ->inputMode('decimal')
+                                        ->step(0.01)
+                                        ->label(__('caution'))
+                                        ->required(),
+
+                Forms\Components\FileUpload::make('photo')
+                                        ->label(__('photo')),
+
+                Forms\Components\FileUpload::make('images')
+                                        ->multiple()
+                                        ->label(__('images')),
             ]);
     }
 
@@ -31,9 +56,23 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\ImageColumn::make('photo')->label(__('photo')),
+                Tables\Columns\TextColumn::make('name')->label(__('product_name'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('location.status')->label(__('status'))
+                                        ->badge()
+                                        ->color(fn (string $status): string => match ($status) {
+                                            'Disponibe' => 'success',
+                                            'Non disponible' => 'danger',
+                                        })
+                                        ->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('price')->label(__('price'))->money('eur'),
+                Tables\Columns\TextColumn::make('caution')->label(__('caution'))->money('eur'),
             ])
             ->filters([
+                Tables\Filters\Filter::make('status')
+                ->query(fn (Builder $query): Builder => $query->whereHas('location', fn($q) => $q->where('status', 0)))
+                ->toggle(),
+            // ...
                 //
             ])
             ->actions([
@@ -48,14 +87,14 @@ class ProductResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -63,5 +102,5 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }    
+    }
 }
